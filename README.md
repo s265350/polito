@@ -1,4 +1,4 @@
-# Computer animation course
+# Computer animation
 ## Short CGI Milka advertisement
 This is a project of CG animation made with **Blender**, evaluated only for the **animations** and **simulations**.
 
