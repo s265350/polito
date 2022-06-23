@@ -1,0 +1,48 @@
+GET http://localhost:3001/api/tasks/all/important
+Content-type: text/plain
+
+###
+
+GET http://localhost:3001/api/tasks/all/private
+Content-type: text/plain
+
+###
+
+GET http://localhost:3001/api/tasks/all
+Content-type: text/plain
+
+###
+
+GET http://localhost:3001/api/tasks/8
+Content-type: text/plain
+
+###
+
+POST http://localhost:3001/api/tasks
+Content-type: application/json
+
+{ "description" : "nuova", "important" : 1, "private" : 1, "deadline": "2021-05-11", "completed" : 1 }
+
+###
+
+PUT http://localhost:3001/api/tasks/10
+Content-type: application/json
+
+{ "description" : "aggiornata", "important" : 1, "private" : 0, "deadline": "2021-06-11", "completed" : 1 }
+
+###
+
+DELETE http://localhost:3001/api/tasks/15
+Content-type: text/plain
+
+###
+
+POST http://localhost:3001/api/sessions
+Content-type: application/json
+
+{ "username" : "john.doe@polito.it", "password" : "vespa", "id":1}
+
+###
+DELETE http://localhost:3001/api/sessions/current
+Content-type: application/json
+
