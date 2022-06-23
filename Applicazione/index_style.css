@@ -1,0 +1,49 @@
+body{
+    font-size: 110%;
+    margin: 0;
+}
+
+.hero-image {
+    /* dimensions = "2987 × 1680" */
+    background-image: url("images/spacebackground.jpg"); /* The image used */
+    background-color: #cccccc; /* Used if the image is unavailable */
+    height: 1000px; /* You must set a specified height */
+    background-position: center; /* Center the image */
+    background-repeat: no-repeat; /* Do not repeat the image */
+    background-size: cover; /* Resize the background image to cover the entire container */
+}
+
+.hero-text {
+    text-align: center;
+    position: fixed;
+    top: 20em;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+}
+
+.row {
+    display: flex;
+}
+
+.column {
+    flex: 50%;
+    padding: 5px;
+}
+
+h1{
+    font-family: Arial;
+    font-size: 50px;
+    color: darkorange;
+}
+
+h2 {
+    font-family: Helvetica;
+    font-size: 80px;
+    color: darkorange;
+}
+
+h3{
+    font-family: sans-serif;
+    font-size: 20px;
+}

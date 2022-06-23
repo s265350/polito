@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <title>Asteroids Wars</title>
+    <script type='text/javascript' src='https://www.x3dom.org/x3dom/release/x3dom.js'></script>
+    <script type='text/javascript' src='functions.js'></script>
+    <link rel='stylesheet' type='text/css' href='https://www.x3dom.org/x3dom/release/x3dom.css'/>
+    <link rel='stylesheet' type='text/css' href='index_style.css'/>
+</head>
+
+<body onload="redirect('menu')">
+
+<div style="display: none">
+    ElapsedTime: <span id="elapsed"></span> <br>
+    CycleTime: <span id="cycle"></span> <br>
+    <span id="elapsedOb0"></span> <br>
+    <span id="elapsedOb1"></span> <br>
+    <span id="elapsedOb2"></span>  <br>
+    GIRO:  <span id="giro"></span> <br>
+</div>
+
+<div class="hero-image" id="background" onclick="setAudio('')">
+    <div class="hero-text">
+        <audio id="audio_menu" src="audio/cantinaband.mp3" loop></audio>
+        <audio id="audio_over" src="audio/gameover(2sec).mp3"></audio>
+        <audio id="damage" src="audio/explosion10.wav"></audio>
+        <audio id="coinSound" src="audio/coins.wav"></audio>
+        <h1 id="title" style="display: none"></h1>
+        <h2 id="bigtitle" style="display: none"></h2>
+        <h3 id="subtitle" style="display: none"></h3>
+
+        <div id="play" style="display: none">
+            <x3d width="1000px" height="600px" >
+                <scene   DEF='scene'>
+                    <AudioClip id="audio_game" url="audio/ingameaudio.mp3" loop='true' enabled='false'></AudioClip>
+                    <!--<navigationInfo type='"GAME" "ANY"' id="navType" ></navigationInfo>-->
+                    <background backurl="images/2k_stars_milky_way.jpg"></background>
+
+<!--                    <PointLight id="point" translation="0 5 0" on="true" intensity="3" color="1 1 1"></PointLight>-->
+
+                    <!-- NAVE-->
+                    <Transform DEF="naveTRANS" id="naveTRANS" translation="0 0 0"  >
+                        <Inline url="models/StarDestroyer_ship.x3d" nameSpaceName="naveFILE" mapDEFToID="true"></Inline>
+
+                        <SpotLight id="spot" ambientIntensity="1" intensity="4" on="true" location="0 2 0" cutOffAngle="0.5"
+                                   beamWidth="0.7" color="1 1 1" direction="0 0 1"></SpotLight>
+                    </Transform>
+
+                    <!-- CAMERA -->
+                    <Transform DEF="Camera1_TRANSFORM"  rotation="0 1 0 3.14">
+                        <Viewpoint id="dietro" position="0  2.5  10" orientation="1 0 0 -0.2" description="dietro"></Viewpoint>
+                    </Transform>
+
+                    <!-- OSTACOLO 0 -->
+                    <transform translation="4 0 -10" DEF="ostacolo0" id="ostacolo0" scale="1.2 1.2 1.2">
+                        <inline url="models/asteroid.x3d" nameSpaceName="asteroid" mapDEFToID="true"></inline>
+                    </transform>
+
+                    <!-- OSTACOLO 1 -->
+                    <transform translation="0 0 -10" DEF="ostacolo1" id="ostacolo1" scale="1.2 1.2 1.2">
+                        <inline url="models/asteroid.x3d" nameSpaceName="asteroid" mapDEFToID="true"></inline>
+                    </transform>
+
+                    <!-- OSTACOLO 2 -->
+                    <transform translation="-4 0 -10" DEF="ostacolo2" id="ostacolo2" scale="1.2 1.2 1.2">
+                        <inline url="models/asteroid.x3d" nameSpaceName="asteroid" mapDEFToID="true"></inline>
+                    </transform>
+
+                    <!-- MONETA -->
+                    <transform translation="0 0 -10" DEF="coin" id="coin" scale="0.7 0.7 0.7">
+                        <inline url="models/moneta.x3d" nameSpaceName="moneta" mapDEFToID="true"></inline>
+                    </transform>
+
+                    <PositionInterpolator DEF="moveCoin" id="moveCoin" key="0 1" keyValue="4 0 50  4 0 -20"
+                                          onoutputchange="collisioni(event)"></PositionInterpolator>
+
+                    <timeSensor DEF="timeCoin" id="timeCoin" cycleInterval="5" loop="false" enabled="true"></timeSensor>
+
+                    <Route fromNode="timeCoin" fromField ="fraction_changed" toNode="moveCoin" toField="set_fraction"></Route>
+                    <Route fromNode="moveCoin" fromField ="value_changed" toNode="coin" toField="translation"></Route>
+
+                    <!-- SENSORI OSTACOLI -->
+                    <timeSensor DEF="spawn" id="spawn" cycleInterval="5" loop="true" enabled="false"
+                                onoutputchange="changeVisibleNode(event)"></timeSensor>
+                    <timeSensor DEF="time0" id="time0" cycleInterval="5" loop="false" enabled="true"></timeSensor>
+                    <timeSensor DEF="time1" id="time1" cycleInterval="5" loop="false" enabled="true"></timeSensor>
+                    <timeSensor DEF="time2" id="time2" cycleInterval="5" loop="false" enabled="true"></timeSensor>
+
+                    <PositionInterpolator DEF="move0" key="0 1" keyValue="4 0 50  4 0 -20"
+                                          onoutputchange="collisioni(event)"></PositionInterpolator>
+
+                    <PositionInterpolator DEF="move1" key="0 1" keyValue="0 0 50  0 0 -20"
+                                          onoutputchange="collisioni(event)"></PositionInterpolator>
+
+                    <PositionInterpolator DEF="move2" key="0 1" keyValue="-4 0 50  -4 0 -20"
+                                          onoutputchange="collisioni(event)"></PositionInterpolator>
+
+                    <Route fromNode="time0" fromField ="fraction_changed" toNode="move0" toField="set_fraction"></Route>
+                    <Route fromNode="move0" fromField ="value_changed" toNode="ostacolo0" toField="translation"></Route>
+
+                    <Route fromNode="time1" fromField ="fraction_changed" toNode="move1" toField="set_fraction"></Route>
+                    <Route fromNode="move1" fromField ="value_changed" toNode="ostacolo1" toField="translation"></Route>
+
+                    <Route fromNode="time2" fromField ="fraction_changed" toNode="move2" toField="set_fraction"></Route>
+                    <Route fromNode="move2" fromField ="value_changed" toNode="ostacolo2" toField="translation"></Route>
+
+
+                    <!-- ROTAZIONE OSTACOLI -->
+                    <timeSensor DEF="rotationTime" cycleInterval="5" loop="true" enabled="true"></timeSensor>
+                    <orientationInterpolator DEF="obsRotate" key='0 0.5 1' keyValue='0 1 0 0  0 1 0 3.14159  0 1 0 6.28317'></orientationInterpolator>
+                    <Route fromNode="rotationTime" fromField ="fraction_changed" toNode="obsRotate" toField="set_fraction"></Route>
+                    <Route fromNode="obsRotate" fromField ="value_changed" toNode="ostacolo0" toField="rotation"></Route>
+                    <Route fromNode="obsRotate" fromField ="value_changed" toNode="ostacolo1" toField="rotation"></Route>
+                    <Route fromNode="obsRotate" fromField ="value_changed" toNode="ostacolo2" toField="rotation"></Route>
+
+                    <!-- ROTAZIONE MONETA -->
+                    <orientationInterpolator DEF="coinRotate" key='0 0.5 1' keyValue='1 0 0 0  1 0 0 3.14159  1 0 0 6.28317'></orientationInterpolator>
+
+                    <Route fromNode="rotationTime" fromField ="fraction_changed" toNode="coinRotate" toField="set_fraction"></Route>
+                    <Route fromNode="coinRotate" fromField ="value_changed" toNode="coin" toField="rotation"></Route>
+
+                    <!-- SHIFT RIGHT -->
+                    <timeSensor DEF="shiftTime" name="shiftCenterRight" enabled="false" cycleInterval="0.7"></timeSensor>
+                    <PositionInterpolator DEF="shiftCenterRight" key="0 1" keyValue="0 0 0  -4 0 0"></PositionInterpolator>
+                    <Route fromNode="shiftTime" fromField ="fraction_changed" toNode="shiftCenterRight" toField="set_fraction"></Route>
+                    <Route fromNode="shiftCenterRight" fromField ="value_changed" toNode="naveTRANS" toField="translation"></Route>
+
+                    <!-- SHIFT RIGHT -->
+                    <timeSensor DEF="shiftTime" name="shiftLeftRight" enabled="false" cycleInterval="0.7"></timeSensor>
+                    <PositionInterpolator DEF="shiftLeftRight" key="0 1" keyValue="4 0 0  0 0 0"></PositionInterpolator>
+                    <Route fromNode="shiftTime" fromField ="fraction_changed" toNode="shiftLeftRight" toField="set_fraction"></Route>
+                    <Route fromNode="shiftLeftRight" fromField ="value_changed" toNode="naveTRANS" toField="translation"></Route>
+
+                    <!-- SHIFT LEFT -->
+                    <timeSensor DEF="shiftTime" name="shiftCenterLeft" enabled="false" cycleInterval="0.7"></timeSensor>
+                    <PositionInterpolator DEF="shiftCenterLeft" key="0 1" keyValue="0 0 0  4 0 0"></PositionInterpolator>
+                    <Route fromNode="shiftTime" fromField ="fraction_changed" toNode="shiftCenterLeft" toField="set_fraction"></Route>
+                    <Route fromNode="shiftCenterLeft" fromField ="value_changed" toNode="naveTRANS" toField="translation"></Route>
+
+                    <!-- SHIFT LEFT -->
+                    <timeSensor DEF="shiftTime" name="shiftRightLeft" enabled="false" cycleInterval="0.7"></timeSensor>
+                    <PositionInterpolator DEF="shiftRightLeft" key="0 1" keyValue="-4 0 0  0 0 0"></PositionInterpolator>
+                    <Route fromNode="shiftTime" fromField ="fraction_changed" toNode="shiftRightLeft" toField="set_fraction"></Route>
+                    <Route fromNode="shiftRightLeft" fromField ="value_changed" toNode="naveTRANS" toField="translation"></Route>
+
+                    <!-- ROTATE RIGHT -->
+                    <timeSensor DEF="shiftTime" name="rotateRight" enabled="false" cycleInterval="0.7"></timeSensor>
+                    <OrientationInterpolator DEF='rotateRight' key='0 0.5 1' keyValue='0 0 1 0  0 0 1 0.4  0 0 1 0'>
+                    </OrientationInterpolator>
+                    <route fromNode='shiftTime' fromField='fraction_changed' toNode='rotateRight' toField='set_fraction'></route>
+                    <route fromNode='rotateRight' fromField='value_changed' toNode='naveTRANS' toField='rotation'></route>
+
+                    <!-- ROTATE LEFT -->
+                    <timeSensor DEF="shiftTime" name="rotateLeft" enabled="false" cycleInterval="0.7"></timeSensor>
+                    <OrientationInterpolator DEF='rotateLeft' key='0 0.5 1' keyValue='0 0 1 0  0 0 1 -0.4  0 0 1 0'>
+                    </OrientationInterpolator>
+                    <route fromNode='shiftTime' fromField='fraction_changed' toNode='rotateLeft' toField='set_fraction'></route>
+                    <route fromNode='rotateLeft' fromField='value_changed' toNode='naveTRANS' toField='rotation'></route>
+
+                    <!-- PUNTEGGIO -->
+                    <transform rotation="0 1 0 3.14" translation="-5 4 0" >
+                        <shape>
+                            <appearance>
+                                <material ambientIntensity='0.0933' diffuseColor='0.023 0.223 0.443' shininess="0.95" specularColor="0.023 0.223 0.443"></material>
+                            </appearance>
+                            <text string='Points: 0' id="points" >
+                                <fontstyle family="'Times' 'Orbitron'" size="0.5" ></fontstyle>
+                            </text>
+                        </shape>
+                    </transform>
+
+                    <transform rotation="0 1 0 3.14" translation="-2.5 4 0" >
+                        <shape>
+                            <appearance>
+                                <material ambientIntensity='0.0933' diffuseColor='0.85 0.64 0.12' shininess="1" specularColor="0.85 0.64 0.12"></material>
+                            </appearance>
+                            <text string='0' id="nCoin" >
+                                <fontstyle family="'Times' 'Orbitron'" size="0.5" ></fontstyle>
+                            </text>
+                        </shape>
+                    </transform>
+
+                    <PointLight id="point" translation="-3 4 0" on="true" intensity="1" color="1 1 1"></PointLight>
+
+                    <transform translation="-3 4 0" DEF="coinIcon" id="coinIcon" scale="0.2 0.2 0.2">
+                        <inline url="models/moneta.x3d" nameSpaceName="monetaIco" mapDEFToID="true"></inline>
+                    </transform>
+
+
+                    <Route fromNode="coinRotate" fromField ="value_changed" toNode="coinIcon" toField="rotation"></Route>
+
+                    <transform rotation="0 1 0 3.14" translation="-1.1 4 0" >
+                        <shape>
+                            <appearance>
+                                <material ambientIntensity='1' diffuseColor='0.545 0.078 0.023' shininess="0.7" ></material>
+                            </appearance>
+                            <text string='0' id="nVite" >
+                                <fontstyle family="'Times' 'Orbitron'" size="0.5" ></fontstyle>
+                            </text>
+                        </shape>
+                    </transform>
+
+                    <transform translation="-1.5 3.85 0" DEF="heart" id="heart" scale="1 1 1">
+                        <appearance color="1 0 0"></appearance>
+                        <inline url="models/heart.x3d" nameSpaceName="cuore" mapDEFToID="true"></inline>
+                    </transform>
+
+                    <transform rotation="0 1 0 3.14" translation="4.5 4 -10" id="invincibleText">
+                        <shape>
+                            <appearance>
+                                <material ambientIntensity='0.0933' diffuseColor='1 0 1' shininess="0.95" specularColor="1 0.24 0"></material>
+                            </appearance>
+                            <text string='INVINCIBILE!' >
+                                <fontstyle family="'Times' 'Orbitron'" solid='true' size="0.5" ></fontstyle>
+                            </text>
+                        </shape>
+                    </transform>
+
+                    <transform rotation="0 1 0 3.14" translation="0 2 -10" id="damagetext">
+                        <shape>
+                            <appearance>
+                                <material ambientIntensity='0.0933' diffuseColor='1 0 0' shininess="0.95" specularColor="1 0.24 0"></material>
+                            </appearance>
+                            <text string='DAMAGE!' >
+                                <fontstyle family="'Times' 'Orbitron'" solid='true' size="1" ></fontstyle>
+                            </text>
+                        </shape>
+                    </transform>
+
+                    <SpotLight id="hurt" on="false" color="1 0 0" intensity="4" location="0 4 2" direction="0 -1 0"></SpotLight>
+
+                </scene>
+            </x3d>
+        </div>
+
+        <!-- dimension="800 × 180" (reduction="30%") -->
+        <img id="menu_soon" style="display: none" src="images/menus/menu.png" width="560" height="126" onclick="redirect('back')"></button>
+
+        <div  id="menu" style="display: none" class="column">
+            <div class="row">
+                <!-- dimension="500 × 180" (reduction="40%") -->
+                <img src="images/menus/play_menu.png" width="300" height="108" onclick="redirect('play')"></button>
+                <img src="images/settings/menu.png" width="300" height="108" onclick="redirect('settings')"></button>
+            </div>
+        </div>
+
+        <div id="settings" style="display: none" class="row">
+            <div class="column">
+                <!-- dimension="900 × 180" (reduction="40%") -->
+                <img id="audio_setting" src="images/settings/audio_on.png" width="540" height="108" onclick="setAudio('setting')"></button>
+                <img id="difficulty_setting" src="images/settings/difficolta_facile.png" width="540" height="108" onclick="changeDifficulty()"></button>
+                <img id="setting_2" src="images/settings/setting2_on.png" width="540" height="108" onclick="redirect('soon')"></button>
+                <img id="back_setting" src="images/menus/back.png" width="240" height="108" onclick="redirect('back')"></button>
+            </div>
+        </div>
+
+        <div id="ships" style="display: none" class="column">
+            <!-- images dimension="180 × 180" (reduction=30%) -->
+            <img id="stardestroyer" src="images/ships/StarDestroyer_U.png" width="126" height="126" onclick="selectShip('stardestroyer')"></button>
+            <img id="tiewing" src="images/ships/Tiewing_U.png" width="126" height="126" onclick="selectShip('tiewing')"></button>
+            <img id="xwing" src="images/ships/Xwing_U.png" width="126" height="126" onclick="selectShip('xwing')"></button>
+            <img id="millenniumfalcon" src="images/ships/MillenniumFalcon_U.png" width="126" height="126" onclick="selectShip('millenniumfalcon')"></button>
+            <div id="x3d_ships" style="display: none" class="column">
+                <div class="row">
+                    <div class="column" width="0"></div>
+                    <div>
+                        <x3d><scene><Transform><Inline id="shipmodel"></Inline></Transform></scene></x3d>
+                    </div>
+                    <div class="column" width="0"></div>
+                </div>
+                <div class="row">
+                    <!-- dimension="400 × 180" (reduction="40%") -->
+                    <img id="back_option" src="images/menus/back.png" width="240" height="108" onclick="redirect('back')"></button>
+                    <img id="play_again" src="images/menus/play.png" width="240" height="108" onclick="redirect('play')"></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
