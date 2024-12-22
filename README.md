@@ -16,9 +16,9 @@ You can find the official project page on [itch.io](https://wefranck.itch.io/pom
 
 ## Web applications
 
-### Task manager ([go](https://github.com/s265350/polito/tree/task-manager-web-application))
+### Task manager ([go](https://github.com/s265350/polito/tree/task-manager-web-app))
 A group project for a laboratory to create a simple client-server web application using **Node.js** and **React** together with the  **Bootstrap** framework for the appearance.
-### Sourvey provider ([go](https://github.com/s265350/polito/tree/survey-provider-web-application))
+### Sourvey provider ([go](https://github.com/s265350/polito/tree/survey-web-app))
 The course exam was to develop  a Survey service provider **client-server** web application with the same tools used for the above laboratory.
-### F&F web application ([go](https://github.com/s265350/polito/tree/F-%26-F-web-application))
+### F&F web application ([go](https://github.com/s265350/polito/tree/FF-web-app))
 A client-server web application to identify faces for a domestic video security system.
